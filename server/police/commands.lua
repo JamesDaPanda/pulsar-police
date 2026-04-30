@@ -7,10 +7,7 @@ function RegisterCommands()
 			if
 				not Player(source).state.isCuffed
 				and not Player(source).state.isDead
-				and ((function()
-					local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-					return phoneItem ~= nil and phoneItem.metadata.durability > 0
-				end)())
+				and (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE)
 			then
 				if _911Cds[source] == nil or os.time() >= _911Cds[source] then
 					exports["pulsar-chat"]:SendEmergency(source, rawCommand:sub(4))
@@ -38,10 +35,7 @@ function RegisterCommands()
 			if
 				not Player(source).state.isCuffed
 				and not Player(source).state.isDead
-				and ((function()
-					local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-					return phoneItem ~= nil and phoneItem.metadata.durability > 0
-				end)())
+				and (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE)
 			then
 				if _911Cds[source] == nil or os.time() >= _911Cds[source] then
 					exports["pulsar-chat"]:SendEmergencyAnonymous(source, rawCommand:sub(5))
@@ -69,10 +63,7 @@ function RegisterCommands()
 		function(source, args, rawCommand)
 			if tonumber(args[1]) then
 				local target = exports['pulsar-characters']:FetchBySID(tonumber(args[1]))
-				if ((function()
-						local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-						return phoneItem == nil or phoneItem.metadata.durability <= 0
-					end)()) then
+				if not (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE) then
 					exports["pulsar-chat"]:SendSystemSingle(source, "You Find It Difficult Replying to 911")
 					return
 				end
@@ -114,10 +105,7 @@ function RegisterCommands()
 			if
 				not Player(source).state.isCuffed
 				and not Player(source).state.isDead
-				and ((function()
-					local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-					return phoneItem ~= nil and phoneItem.metadata.durability > 0
-				end)())
+				and (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE)
 			then
 				if _311Cds[source] == nil or os.time() >= _311Cds[source] then
 					exports["pulsar-chat"]:SendNonEmergency(source, rawCommand:sub(4))
@@ -145,10 +133,7 @@ function RegisterCommands()
 			if
 				not Player(source).state.isCuffed
 				and not Player(source).state.isDead
-				and ((function()
-					local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-					return phoneItem ~= nil and phoneItem.metadata.durability > 0
-				end)())
+				and (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE)
 			then
 				if _311Cds[source] == nil or os.time() >= _311Cds[source] then
 					exports["pulsar-chat"]:SendNonEmergencyAnonymous(source, rawCommand:sub(5))
@@ -198,10 +183,7 @@ function RegisterCommands()
 		function(source, args, rawCommand)
 			if tonumber(args[1]) then
 				local target = exports['pulsar-characters']:FetchBySID(tonumber(args[1]))
-				if ((function()
-						local phoneItem = exports.ox_inventory:getUtilitySlotItem(source, 8)
-						return phoneItem == nil or phoneItem.metadata.durability <= 0
-					end)()) then
+				if not (Player(source).state.ItemStates and Player(source).state.ItemStates.PHONE) then
 					exports["pulsar-chat"]:SendSystemSingle(source, "You Find It Difficult Replying to 311")
 					return
 				end
