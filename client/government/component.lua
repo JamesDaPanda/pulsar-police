@@ -1,16 +1,4 @@
-local govDutyPoints = {
-	{
-		center = vector3(-587.98, -206.59, 38.23),
-		length = 0.8,
-		width = 0.8,
-		options = {
-			heading = 30,
-			--debugPoly=true,
-			minZ = 37.23,
-			maxZ = 38.83,
-		},
-	},
-}
+local govDutyPoints = Config.GovDutyZones
 
 AddEventHandler('onClientResourceStart', function(resource)
 	if resource == GetCurrentResourceName() then
@@ -55,11 +43,12 @@ AddEventHandler('onClientResourceStart', function(resource)
 			},
 		}
 
+		local p = Config.GovServicesPed
 		exports['pulsar-pedinteraction']:Add(
 			"govt-services",
-			`a_f_m_eastsa_02`,
-			vector3(-552.412, -202.760, 37.239),
-			337.363,
+			p.model,
+			p.coords,
+			p.heading,
 			25.0,
 			govServices,
 			"bell-concierge"
@@ -75,15 +64,15 @@ AddEventHandler('onClientResourceStart', function(resource)
 		--     options = govServices
 		-- })
 
-		for k, v in ipairs(govDutyPoints) do
+		for _, v in ipairs(govDutyPoints) do
 			exports.ox_target:addBoxZone({
-				id = "gov-info-" .. k,
-				coords = v.center,
-				size = vector3(v.length, v.width, 2.0),
-				rotation = v.options.heading,
-				debug = false,
-				minZ = v.options.minZ,
-				maxZ = v.options.maxZ,
+				id       = v.id,
+				coords   = v.coords,
+				size     = v.size,
+				rotation = v.rotation,
+				debug    = false,
+				minZ     = v.minZ,
+				maxZ     = v.maxZ,
 				options = {
 					{
 						icon = "fas fa-clipboard-check",
@@ -115,21 +104,20 @@ AddEventHandler('onClientResourceStart', function(resource)
 			maxZ = 47.37,
 		}, {})
 
+		local gavel = Config.CourthouseGavel
 		exports.ox_target:addBoxZone({
-			id = "court-gavel",
-			coords = vector3(-575.8, -210.3, 38.77),
-			size = vector3(0.8, 0.8, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 37.77,
-			maxZ = 39.37,
-			options = {
+			id       = "court-gavel",
+			coords   = gavel.coords,
+			size     = gavel.size,
+			rotation = gavel.rotation,
+			debug    = false,
+			minZ     = gavel.minZ,
+			maxZ     = gavel.maxZ,
+			options  = {
 				{
-					icon = "fas fa-gavel",
+					icon  = "fas fa-gavel",
 					label = "Use Gavel",
 					event = "Government:Client:UseGavel",
-					-- groups = { "government" },
-					-- reqDuty = true,
 				},
 			}
 		})
@@ -137,7 +125,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 end)
 
 RegisterNetEvent("Characters:Client:Spawn", function()
-	exports["pulsar-blips"]:Add("courthouse", "Courthouse", vector3(-538.916, -214.852, 37.650), 419, 0, 0.9)
+	exports["pulsar-blips"]:Add("courthouse", "Courthouse", Config.CourthouseBlip, 419, 0, 0.9)
 end)
 
 AddEventHandler("Government:Client:UseGavel", function()

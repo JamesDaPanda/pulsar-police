@@ -30,91 +30,57 @@ AddEventHandler('onClientResourceStart', function(resource)
 			return LocalPlayer.state.onDuty == "prison" and LocalPlayer.state.isDead
 		end)
 
-		exports.ox_target:addBoxZone({
-			id = "prison-lockdown-1",
-			coords = vector3(1771.76, 2491.75, 49.67),
-			size = vector3(4.8, 0.8, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 49.07,
-			maxZ = 50.07,
-			options = {
-				{
-					icon = "lock",
-					label = "Enable Lockdown",
-					event = "Prison:Client:SetLockdown",
-					onSelect = function()
-						TriggerEvent("Prison:Client:SetLockdown", { state = true })
-					end,
-					canInteract = function()
-						return not GlobalState["PrisonLockdown"]
-							and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
-					end,
-				},
-				{
-					icon = "lock-open",
-					label = "Disable Lockdown",
-					event = "Prison:Client:SetLockdown",
-					onSelect = function()
-						TriggerEvent("Prison:Client:SetLockdown", { state = false })
-					end,
-					canInteract = function()
-						return GlobalState["PrisonLockdown"]
-							and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
-					end,
-				},
-			}
-		})
+		local lockdownOptions = {
+			{
+				icon = "lock",
+				label = "Enable Lockdown",
+				onSelect = function()
+					TriggerEvent("Prison:Client:SetLockdown", { state = true })
+				end,
+				canInteract = function()
+					return not GlobalState["PrisonLockdown"]
+						and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
+				end,
+			},
+			{
+				icon = "lock-open",
+				label = "Disable Lockdown",
+				onSelect = function()
+					TriggerEvent("Prison:Client:SetLockdown", { state = false })
+				end,
+				canInteract = function()
+					return GlobalState["PrisonLockdown"]
+						and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
+				end,
+			},
+		}
 
-		exports.ox_target:addBoxZone({
-			id = "prison-lockdown-2",
-			coords = vector3(1773.06, 2571.9, 45.73),
-			size = vector3(0.6, 0.4, 2.0),
-			rotation = 0,
-			debug = false,
-			minZ = 45.93,
-			maxZ = 46.93,
-			options = {
-				{
-					icon = "lock",
-					label = "Enable Lockdown",
-					event = "Prison:Client:SetLockdown",
-					onSelect = function()
-						TriggerEvent("Prison:Client:SetLockdown", { state = true })
-					end,
-					canInteract = function()
-						return not GlobalState["PrisonLockdown"]
-							and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
-					end,
-				},
-				{
-					icon = "lock-open",
-					label = "Disable Lockdown",
-					event = "Prison:Client:SetLockdown",
-					onSelect = function()
-						TriggerEvent("Prison:Client:SetLockdown", { state = false })
-					end,
-					canInteract = function()
-						return GlobalState["PrisonLockdown"]
-							and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
-					end,
-				},
-			}
-		})
+		for _, zone in ipairs(Config.PrisonLockdownZones) do
+			exports.ox_target:addBoxZone({
+				id       = zone.id,
+				coords   = zone.coords,
+				size     = zone.size,
+				rotation = zone.rotation,
+				debug    = false,
+				minZ     = zone.minZ,
+				maxZ     = zone.maxZ,
+				options  = lockdownOptions,
+			})
+		end
 
+		local cellDoors = Config.PrisonCellDoorsZone
 		exports.ox_target:addBoxZone({
-			id = "prison-doors-lockup",
-			coords = vector3(1774.88, 2492.29, 49.67),
-			size = vector3(2.2, 0.4, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 49.77,
-			maxZ = 50.97,
-			options = {
+			id       = cellDoors.id,
+			coords   = cellDoors.coords,
+			size     = cellDoors.size,
+			rotation = cellDoors.rotation,
+			debug    = false,
+			minZ     = cellDoors.minZ,
+			maxZ     = cellDoors.maxZ,
+			options  = {
 				{
 					icon = "lock",
 					label = "Lock Cell Doors",
-					event = "Prison:Client:SetCellState",
 					onSelect = function()
 						TriggerEvent("Prison:Client:SetCellState", { state = true })
 					end,
@@ -127,7 +93,6 @@ AddEventHandler('onClientResourceStart', function(resource)
 				{
 					icon = "lock-open",
 					label = "Unlock Cell Doors",
-					event = "Prison:Client:SetCellState",
 					onSelect = function()
 						TriggerEvent("Prison:Client:SetCellState", { state = false })
 					end,
@@ -136,7 +101,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 							and (LocalPlayer.state.onDuty == "police" or LocalPlayer.state.onDuty == "prison")
 					end,
 				},
-			}
+			},
 		})
 
 		exports['pulsar-hud']:InteractionRegisterMenu("prison-utils", "Corrections Utilities", "tablet-rugged",
@@ -186,145 +151,68 @@ AddEventHandler('onClientResourceStart', function(resource)
 				return LocalPlayer.state.onDuty == "prison"
 			end)
 
-		exports.ox_target:addBoxZone({
-			id = "prison-clockinoff-1",
-			coords = vector3(1838.94, 2578.14, 46.01),
-			size = vector3(2.0, 0.8, 2.0),
-			rotation = 305,
-			debug = false,
-			minZ = 45.81,
-			maxZ = 46.61,
-			options = {
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty",
-					event = "Corrections:Client:OnDuty",
-					groups = { "prison" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty",
-					event = "Corrections:Client:OffDuty",
-					groups = { "prison" },
-					reqDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty (Medical)",
-					event = "EMS:Client:OnDuty",
-					groups = { "ems" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty (Medical)",
-					event = "EMS:Client:OffDuty",
-					groups = { "ems" },
-					reqDuty = true,
-				},
-			}
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "prison-clockinoff-2",
-			coords = vector3(1773.99, 2493.69, 49.67),
-			size = vector3(0.6, 0.4, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 50.02,
-			maxZ = 50.62,
-			options = {
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty",
-					event = "Corrections:Client:OnDuty",
-					groups = { "prison" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty",
-					event = "Corrections:Client:OffDuty",
-					groups = { "prison" },
-					reqDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty (Medical)",
-					event = "EMS:Client:OnDuty",
-					groups = { "ems" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty (Medical)",
-					event = "EMS:Client:OffDuty",
-					groups = { "ems" },
-					reqDuty = true,
-				},
-			}
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "prison-clockinoff-3",
-			coords = vector3(1768.84, 2573.73, 45.73),
-			size = vector3(1.4, 0.6, 2.0),
-			rotation = 0,
-			debug = false,
-			minZ = 45.13,
-			maxZ = 46.13,
-			options = {
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty",
-					event = "Corrections:Client:OnDuty",
-					groups = { "prison" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty",
-					event = "Corrections:Client:OffDuty",
-					groups = { "prison" },
-					reqDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard-check",
-					label = "Go On Duty (Medical)",
-					event = "EMS:Client:OnDuty",
-					groups = { "ems" },
-					reqOffDuty = true,
-				},
-				{
-					icon = "fas fa-clipboard",
-					label = "Go Off Duty (Medical)",
-					event = "EMS:Client:OffDuty",
-					groups = { "ems" },
-					reqDuty = true,
-				},
-			}
-		})
-
-		local locker = {
+		local prisonDutyOptions = {
 			{
-				icon = "fas fa-user-lock",
-				label = "Open Personal Locker",
-				event = "Police:Client:OpenLocker",
-				groups = { "prison", "ems" },
+				icon      = "fas fa-clipboard-check",
+				label     = "Go On Duty",
+				event     = "Corrections:Client:OnDuty",
+				groups    = { "prison" },
+				reqOffDuty = true,
+			},
+			{
+				icon    = "fas fa-clipboard",
+				label   = "Go Off Duty",
+				event   = "Corrections:Client:OffDuty",
+				groups  = { "prison" },
+				reqDuty = true,
+			},
+			{
+				icon      = "fas fa-clipboard-check",
+				label     = "Go On Duty (Medical)",
+				event     = "EMS:Client:OnDuty",
+				groups    = { "ems" },
+				reqOffDuty = true,
+			},
+			{
+				icon    = "fas fa-clipboard",
+				label   = "Go Off Duty (Medical)",
+				event   = "EMS:Client:OffDuty",
+				groups  = { "ems" },
 				reqDuty = true,
 			},
 		}
 
+		for _, zone in ipairs(Config.PrisonDutyZones) do
+			exports.ox_target:addBoxZone({
+				id       = zone.id,
+				coords   = zone.coords,
+				size     = zone.size,
+				rotation = zone.rotation,
+				debug    = false,
+				minZ     = zone.minZ,
+				maxZ     = zone.maxZ,
+				options  = prisonDutyOptions,
+			})
+		end
+
+		local locker = Config.PrisonLockerZone
 		exports.ox_target:addBoxZone({
-			id = "prison-shitty-locker",
-			coords = vector3(1833.2, 2574.06, 46.01),
-			size = vector3(5.4, 0.4, 2.0),
-			rotation = 0,
-			debug = false,
-			minZ = 45.01,
-			maxZ = 47.01,
-			options = locker
+			id       = locker.id,
+			coords   = locker.coords,
+			size     = locker.size,
+			rotation = locker.rotation,
+			debug    = false,
+			minZ     = locker.minZ,
+			maxZ     = locker.maxZ,
+			options  = {
+				{
+					icon    = "fas fa-user-lock",
+					label   = "Open Personal Locker",
+					event   = "Police:Client:OpenLocker",
+					groups  = { "prison", "ems" },
+					reqDuty = true,
+				},
+			},
 		})
 	end
 end)

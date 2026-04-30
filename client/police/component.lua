@@ -1,11 +1,4 @@
-local policeStationBlips = {
-	vector3(-445.7, 6013.2, 100.0),  -- paleto
-	vector3(438.7, -981.8, 100.0),   -- mrpd
-	vector3(1850.634, 3683.860, 100.0), -- sandy
-	vector3(372.658, -1601.816, 100.0), -- davis
-	-- vector3(835.011, -1292.794, 100.0), -- lemasa
-	-- vector3(-1081.486, -263.036, 37.791), -- guardius
-}
+local policeStationBlips = Config.StationBlips
 
 local _pdModels = {}
 local _emsModels = {}
@@ -639,93 +632,42 @@ AddEventHandler('onClientResourceStart', function(resource)
 			end
 		end)
 
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-mrpd",
-			coords = vector3(441.96, -981.94, 30.69),
-			size = vector3(1.2, 1.2, 2.0),
-			rotation = 356,
-			debug = false,
-			minZ = 30.49,
-			maxZ = 31.49,
-			options = policeDutyPoint
-		})
+		for _, zone in ipairs(Config.DutyZones) do
+			exports.ox_target:addBoxZone({
+				id       = zone.id,
+				coords   = zone.coords,
+				size     = zone.size,
+				rotation = zone.rotation,
+				debug    = false,
+				minZ     = zone.minZ,
+				maxZ     = zone.maxZ,
+				options  = policeDutyPoint,
+			})
+		end
 
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-sandy",
-			coords = vector3(1833.55, 3678.69, 34.19),
-			size = vector3(1.0, 3.0, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 33.79,
-			maxZ = 35.59,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-pbpd",
-			coords = vector3(-447.18, 6013.36, 32.29),
-			size = vector3(0.8, 1.6, 2.0),
-			rotation = 45,
-			debug = false,
-			minZ = 32.29,
-			maxZ = 32.89,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-davis",
-			coords = vector3(381.37, -1595.84, 30.05),
-			size = vector3(2.0, 1.0, 2.0),
-			rotation = 320,
-			debug = false,
-			minZ = 29.85,
-			maxZ = 31.05,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-lamesa",
-			coords = vector3(837.23, -1289.2, 28.24),
-			size = vector3(0.8, 2.2, 2.0),
-			rotation = 0,
-			debug = false,
-			minZ = 27.24,
-			maxZ = 29.04,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-courthouse",
-			coords = vector3(-528.46, -189.44, 38.23),
-			size = vector3(1.0, 1.0, 2.0),
-			rotation = 30,
-			debug = false,
-			minZ = 37.63,
-			maxZ = 39.23,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-guardius",
-			coords = vector3(-1083.75, -247.15, 37.76),
-			size = vector3(1.2, 2.0, 2.0),
-			rotation = 27,
-			debug = false,
-			minZ = 36.76,
-			maxZ = 38.96,
-			options = policeDutyPoint
-		})
-
-		exports.ox_target:addBoxZone({
-			id = "pd-clockinoff-guardius2",
-			coords = vector3(-1049.57, -231.01, 39.02),
-			size = vector3(1.0, 1.0, 2.0),
-			rotation = 300,
-			debug = false,
-			minZ = 38.02,
-			maxZ = 40.22,
-			options = policeDutyPoint
-		})
+		for _, zone in ipairs(Config.ArmoryZones) do
+			local shopId = zone.shop
+			exports.ox_target:addBoxZone({
+				id       = zone.id,
+				coords   = zone.coords,
+				size     = zone.size,
+				rotation = zone.rotation,
+				debug    = false,
+				minZ     = zone.minZ,
+				maxZ     = zone.maxZ,
+				options  = {
+					{
+						icon     = "fas fa-box-open",
+						label    = zone.label or "Police Armory",
+						groups   = { "police" },
+						reqDuty  = true,
+						onSelect = function()
+							TriggerServerEvent('ox_inventory:bridge:openShop', shopId)
+						end,
+					},
+				},
+			})
+		end
 
 		for k, v in ipairs(_pdStationPolys) do
 			--print(v.options.name)
@@ -788,7 +730,7 @@ end)
 
 RegisterNetEvent("Characters:Client:Spawn", function()
 	for k, v in ipairs(policeStationBlips) do
-		exports["pulsar-blips"]:Add("police_station_" .. k, "Police Department", v, 137, 38, 0.6)
+		exports["pulsar-blips"]:Add("police_station_" .. k, v.label or "Police Department", v.coords, 137, 38, 0.6)
 	end
 end)
 
