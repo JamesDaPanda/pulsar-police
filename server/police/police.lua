@@ -145,12 +145,12 @@ AddEventHandler('onResourceStart', function(resource)
 				if data.type == "property" then
 					if (_breached[data.type][data.property] or 0) > os.time() then
 						cb(true)
-						exports['sn_properties']:ClientEnter(source, data.property)
+						exports['pulsar-properties']:ClientEnter(source, data.property)
 					else
 						exports["pulsar-core"]:ClientCallback(source, "Police:Breach", {}, function(s)
 							if s then
 								_breached[data.type][data.property] = os.time() + (60 * 10)
-								exports['sn_properties']:ClientEnter(source, data.property)
+								exports['pulsar-properties']:ClientEnter(source, data.property)
 								cb(true)
 							else
 								cb(false)
@@ -479,7 +479,7 @@ exports('RunPlate', function(source, plate, wasEntity)
 	)
 
 	if not results or #results == 0 then
-		local stolen = exports['norr-policeradar']:CheckPlate(plate)
+		local stolen = exports['pulsar-radar']:CheckPlate(plate)
 		if stolen then
 			if not _generatedNames[plate] then
 				_generatedNames[plate] = string.format(
@@ -548,7 +548,7 @@ exports('RunPlate', function(source, plate, wasEntity)
 		end
 
 		if properties.FakePlate and plate == properties.FakePlate then
-			local stolen = exports['norr-policeradar']:CheckPlate(plate)
+			local stolen = exports['pulsar-radar']:CheckPlate(plate)
 
 			local ownerName = "Unknown"
 			local vin = vehicle.VIN or "Unknown"
