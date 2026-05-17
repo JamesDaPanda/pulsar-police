@@ -41,7 +41,7 @@ AddEventHandler('onResourceStart', function(resource)
 				GlobalState["PrisonLockdown"] = not GlobalState["PrisonLockdown"]
 				GlobalState["PrisonCellsLocked"] = GlobalState["PrisonLockdown"]
 				for i = 1, 27 do
-					exports['pulsar-doors']:SetLock(string.format("prison_cell_%s", i), GlobalState
+					exports.ox_doorlock:SetLock(string.format("pulsar_prison_cell_%s", i), GlobalState
 						["PrisonCellsLocked"])
 				end
 				exports['pulsar-hud']:Notification(source, "info",
@@ -60,7 +60,7 @@ AddEventHandler('onResourceStart', function(resource)
 			if char and (pState.onDuty == "prison" or pState.onDuty == "police") then
 				GlobalState["PrisonCellsLocked"] = not GlobalState["PrisonCellsLocked"]
 				for i = 1, 27 do
-					exports['pulsar-doors']:SetLock(string.format("prison_cell_%s", i), GlobalState
+					exports.ox_doorlock:SetLock(string.format("pulsar_prison_cell_%s", i), GlobalState
 						["PrisonCellsLocked"])
 				end
 				exports['pulsar-hud']:Notification(source, "info",
@@ -115,7 +115,7 @@ AddEventHandler('onResourceStart', function(resource)
 					local coords = GetEntityCoords(GetPlayerPed(data))
 					_swabCounter += 1
 
-					exports.ox_inventory:AddItem(char:GetData('SID'), 'evidence-dna', 1, {
+					exports.ox_inventory:AddItem(source, 'evidence-dna', 1, {
 						EvidenceType = 'blood',
 						EvidenceId = string.format('%s-%s', os.date('%d%m%y-%H%M%S', os.time()), 950000 + _swabCounter),
 						EvidenceCoords = { x = coords.x, y = coords.y, z = coords.z },
@@ -145,12 +145,12 @@ AddEventHandler('onResourceStart', function(resource)
 				if data.type == "property" then
 					if (_breached[data.type][data.property] or 0) > os.time() then
 						cb(true)
-						exports['pulsar-properties']:ClientEnter(source, data.property)
+						exports['sn_properties']:ClientEnter(source, data.property)
 					else
 						exports["pulsar-core"]:ClientCallback(source, "Police:Breach", {}, function(s)
 							if s then
 								_breached[data.type][data.property] = os.time() + (60 * 10)
-								exports['pulsar-properties']:ClientEnter(source, data.property)
+								exports['sn_properties']:ClientEnter(source, data.property)
 								cb(true)
 							else
 								cb(false)
@@ -479,7 +479,7 @@ exports('RunPlate', function(source, plate, wasEntity)
 	)
 
 	if not results or #results == 0 then
-		local stolen = exports['pulsar-radar']:CheckPlate(plate)
+		local stolen = exports['norr-policeradar']:CheckPlate(plate)
 		if stolen then
 			if not _generatedNames[plate] then
 				_generatedNames[plate] = string.format(
@@ -548,7 +548,7 @@ exports('RunPlate', function(source, plate, wasEntity)
 		end
 
 		if properties.FakePlate and plate == properties.FakePlate then
-			local stolen = exports['pulsar-radar']:CheckPlate(plate)
+			local stolen = exports['norr-policeradar']:CheckPlate(plate)
 
 			local ownerName = "Unknown"
 			local vin = vehicle.VIN or "Unknown"
